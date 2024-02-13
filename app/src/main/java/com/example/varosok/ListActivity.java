@@ -35,6 +35,7 @@ public class ListActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private String url = "https://retoolapi.dev/ckzrng/varosok";
     private List<Varos> varosok = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +57,7 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Varos selectedVaros = varosok.get(position);
+                //Toast.makeText(ListActivity.this, "" + selectedVaros.getId(), Toast.LENGTH_SHORT).show();
                 showDeleteOrModifyDialog(selectedVaros.getId());
             }
 
@@ -64,8 +66,9 @@ public class ListActivity extends AppCompatActivity {
                 builder.setTitle("Válassz műveletet").setMessage("Mit szeretnél tenni?").setPositiveButton("Törlés", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        RequestTask task = new RequestTask(url + "/" + id, "DELETE");
+                        RequestTask task = new RequestTask(url, "DELETE", String.valueOf(id));
                         task.execute();
+                        dialog.cancel();
                     }
                 }).setNegativeButton("Módosítás", new DialogInterface.OnClickListener() {
                     @Override
@@ -76,9 +79,10 @@ public class ListActivity extends AppCompatActivity {
                         finish();
                     }
                 }).setNeutralButton("Mégse", null).create().show();
-                }
+            }
         });
-    };
+    }
+
     private void init() {
         listViewData = findViewById(R.id.listViewData);
         listViewData.setAdapter(new VarosAdapter());
@@ -90,6 +94,7 @@ public class ListActivity extends AppCompatActivity {
         public VarosAdapter() {
             super(ListActivity.this, R.layout.varosok_list_items, varosok);
         }
+
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -121,6 +126,11 @@ public class ListActivity extends AppCompatActivity {
             this.requestUrl = requestUrl;
             this.requestType = requestType;
         }
+        public RequestTask(String requestUrl, String requestType, String requestParams) {
+            this.requestUrl = requestUrl;
+            this.requestType = requestType;
+            this.requestParams = requestParams;
+        }
 
         //doInBackground metódus létrehozása a kérés elküldéséhez
         @Override
@@ -130,12 +140,16 @@ public class ListActivity extends AppCompatActivity {
                 if (requestType.equals("GET")) {
                     response = RequestHandler.get(requestUrl);
                 }
+                if (requestType.equals("DELETE")) {
+                    response = RequestHandler.delete(requestUrl + "/" + requestParams);
+                }
             } catch (IOException e) {
                 Toast.makeText(ListActivity.this,
                         e.toString(), Toast.LENGTH_SHORT).show();
             }
             return response;
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -154,7 +168,7 @@ public class ListActivity extends AppCompatActivity {
                         "Hiba történt a kérés feldolgozása során", Toast.LENGTH_SHORT).show();
                 Log.d("onPostExecuteError:", response.getContent());
             }
-            if(requestType.equals("GET")) {
+            if (requestType.equals("GET")) {
                 Varos[] varosokArray = converter.fromJson(
                         response.getContent(), Varos[].class);
                 varosok.clear();
@@ -162,6 +176,12 @@ public class ListActivity extends AppCompatActivity {
                 listViewData.invalidateViews();
                 Toast.makeText(ListActivity.this,
                         "Sikeres adatlekérdezés", Toast.LENGTH_SHORT).show();
+            }
+            if (requestType.equals("DELETE")) {
+                int id = Integer.parseInt(requestParams);
+                //varosok lista frissítése a törölt elem nélkül
+                varosok.removeIf(varos1 -> varos1.getId() == id);
+                Toast.makeText(ListActivity.this, "Sikeres törlés", Toast.LENGTH_SHORT).show();
             }
         }
     }

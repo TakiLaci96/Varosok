@@ -47,6 +47,8 @@ public class UpdateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Módosítási logika itt
+                //RequestTask task = new RequestTask(url, "GET");
+                //task.execute();
                 modifyVaros();
             }
         });
@@ -75,7 +77,6 @@ public class UpdateActivity extends AppCompatActivity {
     }
 
     private void modifyVaros() {
-        // Módosítási logika itt
 
         int varosId = Integer.parseInt(editTextId1.getText().toString());
         String varosNev = editTextVaros1.getText().toString();
@@ -83,7 +84,7 @@ public class UpdateActivity extends AppCompatActivity {
         int varosLakossag = Integer.parseInt(editTextLakossag1.getText().toString());
 
         // Módosítási logika itt
-        Varos varos = new Varos(varosId, varosNev, varosOrszag, Integer.parseInt(String.valueOf(varosLakossag)));
+        Varos varos = new Varos(varosId, varosNev, varosOrszag, varosLakossag);
         Gson jsonConverter = new Gson();
         RequestTask task = new RequestTask(url + "/" + varosId, "PUT", jsonConverter.toJson(varos));
         task.execute();

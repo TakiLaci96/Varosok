@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         buttonUjFelvetel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RequestTask task = new RequestTask(url, "GET", "id");
+                //RequestTask task = new RequestTask(url, "GET", "id");
                 Intent intent = new Intent(MainActivity.this, InsertActivity.class);
                 startActivity(intent);
                 finish();
