@@ -35,6 +35,7 @@ public class InsertActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
         init();
+        // Felvétel gombra kattintás
         buttonFelvetel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,9 +52,13 @@ public class InsertActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (varos.isEmpty() || orszag.isEmpty() || lakossag == 0) {
+                if (varos.isEmpty() || orszag.isEmpty()) {
                     Toast.makeText(InsertActivity.this,
                             "Minden mező kitöltése kötelező", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (lakossag <= 0) {
+                    Toast.makeText(InsertActivity.this,
+                            "A lakosság mező nem lehet nulla!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -64,6 +69,7 @@ public class InsertActivity extends AppCompatActivity {
                 task.execute();
             }
         });
+        // Vissza gombra kattintás
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,12 +132,6 @@ public class InsertActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
         }
     }
 }

@@ -41,9 +41,11 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         init();
+
         RequestTask task = new RequestTask(url, "GET");
         task.execute();
 
+        // Vissza gombra kattintás, visszatérés a MainActivity-be
         buttonBack2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,14 +55,17 @@ public class ListActivity extends AppCompatActivity {
             }
         });
 
+        // Listaelemre kattintás, ahol kiválaszthatjuk, hogy töröljük vagy módosítjuk a várost
         listViewData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Varos selectedVaros = varosok.get(position);
+                // Itt a kiválasztott város id-je alapján törölhetjük vagy módosíthatjuk azt
                 //Toast.makeText(ListActivity.this, "" + selectedVaros.getId(), Toast.LENGTH_SHORT).show();
                 showDeleteOrModifyDialog(selectedVaros.getId());
             }
 
+            // Törlés vagy módosítás dialógus megjelenítése
             private void showDeleteOrModifyDialog(int id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
                 builder.setTitle("Válassz műveletet").setMessage("Mit szeretnél tenni?").setPositiveButton("Törlés", new DialogInterface.OnClickListener() {
@@ -95,6 +100,7 @@ public class ListActivity extends AppCompatActivity {
             super(ListActivity.this, R.layout.varosok_list_items, varosok);
         }
 
+        // getView metódus létrehozása a listaelemek megjelenítéséhez
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
